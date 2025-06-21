@@ -1,9 +1,9 @@
 pipeline {
   agent any
 
-  triggers {
-    cron('TZ=America/Los_Angeles\n0 10 * * *')
-  }
+    triggers {
+        cron('TZ=America/Los_Angeles\nH 10 * * *')
+    }
 
   environment {
     DISCORD_WEBHOOK_URL = credentials('discord_webhook')
