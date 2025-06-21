@@ -2,11 +2,15 @@
 name = "aws-cost-reporter"
 version = "0.1.0"
 description = "Fetches AWS daily and MTD costs and posts summaries to Discord"
-
 requires-python = ">=3.8"
 dependencies = [
     "boto3>=1.34",
     "requests>=2.25"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.2"
 ]
 
 [project.scripts]
@@ -15,3 +19,6 @@ aws-cost-reporter = "aws_cost_report:main"
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

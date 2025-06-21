@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock
 import datetime
-from aws_cost_report import get_dates, print_table, post_to_discord
+from aws_costs.aws_cost_report import get_dates, print_table, post_to_discord
+
 
 
 class TestAWSCostReport(unittest.TestCase):
