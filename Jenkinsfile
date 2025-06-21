@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  triggers {
+    cron('TZ=America/Los_Angeles\n0 10 * * *')
+  }
+
   environment {
     DISCORD_WEBHOOK_URL = credentials('discord_webhook')
     AWS_ACCESS_KEY_ID = credentials('aws_access_key')
