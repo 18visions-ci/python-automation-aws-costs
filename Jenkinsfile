@@ -11,22 +11,20 @@ pipeline {
   stages {
     stage('Build Docker Image') {
       steps {
-        script {
-          dockerImage = docker.build('aws-cost-reporter')
-        }
+        sh 'docker build -t aws-cost-reporter .'
       }
     }
 
     stage('Run Cost Reporter') {
       steps {
-        script {
-          dockerImage.run(
-            "-e DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL} " +
-            "-e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} " +
-            "-e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} " +
-            "-e AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}"
-          )
-        }
+        sh '''
+          docker run --rm \
+            -e DISCORD_WEBHOOK_URL=$DISCORD_WEBHOOK_URL \
+            -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+            -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+            -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
+            aws-cost-reporter
+        '''
       }
     }
   }
