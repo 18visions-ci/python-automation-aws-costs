@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    DISCORD_WEBHOOK_URL = credentials('discord_webhook') // Jenkins credential ID
+    DISCORD_WEBHOOK_URL = credentials('discord_webhook')
     AWS_ACCESS_KEY_ID = credentials('aws_access_key')
     AWS_SECRET_ACCESS_KEY = credentials('aws_secret_key')
     AWS_DEFAULT_REGION = 'us-west-2'
