@@ -5,7 +5,7 @@ pipeline {
     DISCORD_WEBHOOK_URL = credentials('discord_webhook') // Jenkins credential ID
     AWS_ACCESS_KEY_ID = credentials('aws_access_key')
     AWS_SECRET_ACCESS_KEY = credentials('aws_secret_key')
-    AWS_DEFAULT_REGION = 'us-east-1'
+    AWS_DEFAULT_REGION = 'us-west-2'
   }
 
   stages {
