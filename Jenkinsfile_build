@@ -28,6 +28,15 @@ pipeline {
                 sh '''
                     echo "Pushing Docker image..."
                     docker push ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}
+
+                    echo "Pushing Docker image..."
+                    docker push ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}
+
+                    echo "Tagging as latest..."
+                    docker tag ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY_URL}/${IMAGE_NAME}:latest
+
+                    echo "Pushing latest tag..."
+                    docker push ${REGISTRY_URL}/${IMAGE_NAME}:latest
                 '''
             }
         }
@@ -38,6 +47,7 @@ pipeline {
             sh '''
                 echo "Cleaning up local image..."
                 docker rmi ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} || true
+                docker rmi ${REGISTRY_URL}/${IMAGE_NAME}:latest || true
             '''
             cleanWs()
         }
