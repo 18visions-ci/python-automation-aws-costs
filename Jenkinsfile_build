@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY_URL = 'registry-prod.iworksometimes.com'
-        IMAGE_NAME = 'python-automation-aws-costs'
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
+        REGISTRY_URL        = 'registry-prod.iworksometimes.com'
+        IMAGE_NAME          = 'python-automation-aws-costs'
+        IMAGE_TAG           = "${env.BUILD_NUMBER}"
+        DISCORD_WEBHOOK_URL = credentials('jenkins_build_discord_webhook')  // store your webhook URL as a Secret Text credential
     }
 
     stages {
@@ -29,9 +30,6 @@ pipeline {
                     echo "Pushing Docker image..."
                     docker push ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}
 
-                    echo "Pushing Docker image..."
-                    docker push ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}
-
                     echo "Tagging as latest..."
                     docker tag ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY_URL}/${IMAGE_NAME}:latest
 
@@ -44,10 +42,39 @@ pipeline {
 
     post {
         always {
+            script {
+                // Capture build result
+                def status  = currentBuild.currentResult
+                def job     = env.JOB_NAME
+                def number  = env.BUILD_NUMBER
+                def branch  = env.BRANCH_NAME ?: 'N/A'
+                def url     = env.BUILD_URL
+
+                // Compose a code-block message
+                def message = """🔔 Jenkins Build Notification for **${job}**
+\`\`\`
+Build Number : #${number}
+Branch       : ${branch}
+Status       : ${status}
+URL          : ${url}
+\`\`\`
+"""
+
+                // Convert to valid JSON
+                def payload = groovy.json.JsonOutput.toJson([ content: message ])
+
+                // Send to Discord
+                sh """
+                  curl -s -X POST "$DISCORD_WEBHOOK_URL" \\
+                    -H 'Content-Type: application/json' \\
+                    -d '${payload}'
+                """
+            }
+
+            // Clean up local images
             sh '''
-                echo "Cleaning up local image..."
                 docker rmi ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} || true
-                docker rmi ${REGISTRY_URL}/${IMAGE_NAME}:latest || true
+                docker rmi ${REGISTRY_URL}/${IMAGE_NAME}:latest         || true
             '''
             cleanWs()
         }
