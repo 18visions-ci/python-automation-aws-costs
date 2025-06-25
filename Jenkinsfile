@@ -10,7 +10,7 @@ pipeline {
     AWS_ACCESS_KEY_ID = credentials('aws_access_key')
     AWS_SECRET_ACCESS_KEY = credentials('aws_secret_key')
     AWS_DEFAULT_REGION = 'us-west-2'
-    DOCKER_IMAGE = 'registry-prod.iworksometimes.com/aws-cost-reporter:latest'
+    DOCKER_IMAGE = 'registry-prod.iworksometimes.com/python-automation-aws-costs:latest'
   }
 
   stages {
