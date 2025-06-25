@@ -51,14 +51,14 @@ pipeline {
                 def url     = env.BUILD_URL
 
                 // Compose a code-block message
-                def message = """🔔 Jenkins Build Notification for **${job}**
-\`\`\`
-Build Number : #${number}
-Branch       : ${branch}
-Status       : ${status}
-URL          : ${url}
-\`\`\`
-"""
+                def message = "🔔 Jenkins Build Notification for **${job}**\n" +
+              "```\n" +
+              "Build Number : #${number}\n" +
+              "Branch       : ${branch}\n" +
+              "Status       : ${status}\n" +
+              "URL          : ${url}\n" +
+              "```"
+
 
                 // Convert to valid JSON
                 def payload = groovy.json.JsonOutput.toJson([ content: message ])
