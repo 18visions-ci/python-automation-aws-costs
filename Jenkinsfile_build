@@ -13,26 +13,32 @@ pipeline {
                 checkout scm
             }
         }
+
         stage('Build Docker Image') {
             steps {
-                script {
-                    dockerImage = docker.build("${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}")
-                }
+                sh '''
+                    echo "Building Docker image..."
+                    docker build -t ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} .
+                '''
             }
         }
+
         stage('Push to Registry') {
             steps {
-                script {
-                    sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
-                }
+                sh '''
+                    echo "Pushing Docker image..."
+                    docker push ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}
+                '''
             }
         }
     }
+
     post {
         always {
-            script {
-                sh "docker rmi ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} || true"
-            }
+            sh '''
+                echo "Cleaning up local image..."
+                docker rmi ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} || true
+            '''
             cleanWs()
         }
     }
