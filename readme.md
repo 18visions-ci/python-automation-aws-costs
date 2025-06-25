@@ -53,7 +53,19 @@ docker run --rm \
 ```
 
 ## With Jenkins
-This repo includes a Jenkinsfile for scheduled runs. Jenkins credentials are used for secrets.
+This repository includes two Jenkinsfiles for CI/CD:
+
+### `Jenkinsfile` (Scheduled Cost Reporting)
+This pipeline runs the cost reporter on a schedule (e.g., daily). It uses Jenkins credentials to securely store the `DISCORD_WEBHOOK_URL` and AWS credentials.
+
+### `Jenkinsfile_build` (Docker Image Build)
+This pipeline automates building and publishing the application's Docker image.
+- It builds the Docker image.
+- It tags the image with the build number and `latest`.
+- It pushes the image to a container registry.
+- It sends build status notifications (success or failure) to a Discord channel.
+
+This pipeline requires a 'Secret text' credential with the ID `discord-webhook-url` for the Discord webhook.
 
 ## Configuration
 Edit pyproject.toml to manage dependencies.
