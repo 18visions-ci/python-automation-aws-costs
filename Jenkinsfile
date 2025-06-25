@@ -1,21 +1,22 @@
 pipeline {
   agent any
 
-    triggers {
-        cron('TZ=America/Los_Angeles\nH 10 * * *')
-    }
+  triggers {
+    cron('TZ=America/Los_Angeles\nH 10 * * *')
+  }
 
   environment {
     DISCORD_WEBHOOK_URL = credentials('discord_webhook')
     AWS_ACCESS_KEY_ID = credentials('aws_access_key')
     AWS_SECRET_ACCESS_KEY = credentials('aws_secret_key')
     AWS_DEFAULT_REGION = 'us-west-2'
+    DOCKER_IMAGE = 'registry-prod.iworksometimes.com/aws-cost-reporter:latest'
   }
 
   stages {
-    stage('Build Docker Image') {
+    stage('Pull Docker Image') {
       steps {
-        sh 'docker build -t aws-cost-reporter .'
+        sh 'docker pull $DOCKER_IMAGE'
       }
     }
 
@@ -27,7 +28,7 @@ pipeline {
             -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
             -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
             -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
-            aws-cost-reporter
+            $DOCKER_IMAGE
         '''
       }
     }
@@ -37,7 +38,7 @@ pipeline {
     always {
       script {
         try {
-          sh 'docker rmi aws-cost-reporter || true'
+          sh 'docker rmi $DOCKER_IMAGE || true'
         } catch (Exception e) {
           echo "Image cleanup failed: ${e.getMessage()}"
         }

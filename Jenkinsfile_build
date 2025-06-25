@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY_URL = 'registry-prod.iworksometimes.com'
+        IMAGE_NAME = 'python-automation-aws-costs'
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}")
+                }
+            }
+        }
+        stage('Push to Registry') {
+            steps {
+                script {
+                    sh "docker push ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+                sh "docker rmi ${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG} || true"
+            }
+            cleanWs()
+        }
+    }
+}
