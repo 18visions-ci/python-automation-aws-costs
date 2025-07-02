@@ -8,7 +8,8 @@ def get_dates():
     today = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
     month_start = today.replace(day=1)
-    return today, yesterday, month_start
+    tomorrow = today + datetime.timedelta(days=1)
+    return today, yesterday, month_start, tomorrow
 
 
 def get_cost_data(client, start, end, granularity, group_by_key=None):
@@ -64,11 +65,11 @@ def main():
         return
 
     client = boto3.client('ce')
-    today, yesterday, month_start = get_dates()
+    today, yesterday, month_start, tomorrow = get_dates()
 
     service_resp = get_cost_data(client, yesterday, today, 'DAILY', 'SERVICE')
     usage_resp = get_cost_data(client, yesterday, today, 'DAILY', 'USAGE_TYPE')
-    month_resp = get_cost_data(client, month_start, today, 'MONTHLY')
+    month_resp = get_cost_data(client, month_start, tomorrow, 'MONTHLY')
 
     daily_total = print_table(f"📆 AWS Daily Cost by SERVICE for {yesterday}", service_resp['ResultsByTime'][0]['Groups'], "Service")
     print_table(f"🛠️  Detailed Daily Cost by USAGE_TYPE for {yesterday}", usage_resp['ResultsByTime'][0]['Groups'], "Usage Type")
